@@ -7,7 +7,7 @@ const barlowBold = Barlow_Semi_Condensed({ subsets: ["latin"], weight: "700" });
 const barlowSemiBold = Barlow_Semi_Condensed({ subsets: ["latin"], weight: "600" });
 const barlowRegular = Barlow_Semi_Condensed({ subsets: ["latin"], weight: "200" });
 
-const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
+const ParallaxSection = ({ videoSrc = "https://res.cloudinary.com/diuq0mz3b/video/upload/v1760575331/video_e1imxc.mp4" }) => {
   const sectionRef = useRef(null);
   const rafRef = useRef(null);
   const targetProgressRef = useRef(0);
@@ -23,7 +23,7 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
     { icon: TrendingUp, value: 95, suffix: "%", label: "Placement Rate", color: "text-white" },
   ];
 
-  // Intersection Observer to trigger count-up when section enters viewport
+  // Intersection Observer to trigger count-up
   useEffect(() => {
     if (!sectionRef.current) return;
 
@@ -39,10 +39,7 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
     );
 
     observer.observe(sectionRef.current);
-
-    return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
-    };
+    return () => observer.disconnect();
   }, [countStarted]);
 
   // Scroll & parallax animation
@@ -52,14 +49,11 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
 
       const rect = sectionRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
-
       const start = windowHeight;
       const end = windowHeight * 0.5;
       const rawProgress = (start - rect.top) / (start - end);
-
       const progress = Math.max(0, Math.min(1, rawProgress));
       const easedProgress = 1 - Math.pow(1 - progress, 3);
-
       targetProgressRef.current = easedProgress;
     };
 
@@ -83,24 +77,19 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
     };
   }, []);
 
-  // Count-up animation triggers only when section is visible
+  // Count-up animation
   useEffect(() => {
     if (!countStarted) return;
-
     const duration = 2000;
     const startTime = performance.now();
 
     const step = (timestamp) => {
       const progress = Math.min((timestamp - startTime) / duration, 1);
-
       const updatedNumbers = stats.map((stat) =>
         Math.floor(stat.value * progress)
       );
       setAnimatedNumbers(updatedNumbers);
-
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
+      if (progress < 1) requestAnimationFrame(step);
     };
 
     requestAnimationFrame(step);
@@ -110,9 +99,13 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
   const borderRadius = Math.max(0, (1 - scrollProgress) * 24);
 
   return (
-    <section ref={sectionRef} className="relative z-20 overflow-hidden" style={{ minHeight: "100vh" }}>
+    <section
+      ref={sectionRef}
+      className="relative z-20 overflow-hidden flex items-center justify-center"
+      style={{ minHeight: "100vh" }}
+    >
       <div
-        className="relative overflow-hidden bg-white"
+        className="relative overflow-hidden bg-white flex items-center justify-center"
         style={{
           width: `${widthScale * 100}%`,
           margin: "0 auto",
@@ -121,7 +114,7 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
           willChange: "width, border-radius",
         }}
       >
-        {/* Video Background */}
+        {/* Background Video */}
         <video
           autoPlay
           loop
@@ -135,7 +128,7 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
         </video>
 
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5" style={{ zIndex: 2 }}>
+        <div className="absolute inset-0 opacity-5 z-[2]">
           <div
             className="absolute inset-0"
             style={{
@@ -145,47 +138,54 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
           />
         </div>
 
-        {/* Content */}
-        <div className="relative scale-[0.85] z-10 max-w-7xl mx-auto px-6 md:px-8 py-20 lg:py-5" style={{ zIndex: 10 }}>
+        {/* CONTENT */}
+        <div
+          className="relative scale-[0.9] z-10 w-full max-w-6xl mx-auto px-4 md:px-6 flex flex-col items-center text-center gap-6"
+          style={{
+            transform: `translateY(${(1 - scrollProgress) * 20}px)`,
+            opacity: Math.min(1, scrollProgress * 2),
+          }}
+        >
           {/* Heading */}
-          <div
-            className="text-center mb-16"
-            style={{
-              opacity: Math.min(1, scrollProgress * 2),
-              transform: `translateY(${(1 - scrollProgress) * 50}px)`,
-            }}
-          >
-            <h2 className={`text-5xl md:text-6xl lg:text-7xl mb-6 text-balance text-white ${barlowExtraBold.className}`}>
+          <div>
+            <h2
+              className={`text-4xl md:text-5xl lg:text-6xl mb-2 text-white ${barlowExtraBold.className}`}
+            >
               Where Leaders Are Born
             </h2>
-            <p className={`text-2xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed ${barlowRegular.className}`}>
-              Join a legacy of excellence and innovation. Our MBA program has been shaping
-              industry leaders for over five decades.
+            <p
+              className={`text-base md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed ${barlowRegular.className}`}
+            >
+              Join a legacy of excellence and innovation. Our MBA program has
+              been shaping industry leaders for over five decades.
             </p>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-4">
             {stats.map((stat, idx) => {
               const Icon = stat.icon;
-              const displayValue = stat.format ? stat.format(animatedNumbers[idx]) : animatedNumbers[idx];
+              const displayValue = stat.format
+                ? stat.format(animatedNumbers[idx])
+                : animatedNumbers[idx];
 
               return (
                 <div
                   key={idx}
-                  className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center border border-white/30 hover:bg-white/15 transition-all duration-300"
-                  style={{
-                    opacity: Math.min(1, scrollProgress),
-                    transform: `translateY(${(1 - scrollProgress) * 30}px)`,
-                  }}
+                  className="bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-6 text-center border border-white/20 hover:bg-white/15 transition-all duration-300"
                 >
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 mb-4">
-                    <Icon size={32} className={stat.color} strokeWidth={2} />
+                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/20 mb-3">
+                    <Icon size={28} className={stat.color} strokeWidth={2} />
                   </div>
-                  <div className={`text-5xl md:text-6xl mb-2 text-white ${barlowExtraBold.className}`}>
-                    {displayValue}{stat.suffix}
+                  <div
+                    className={`text-3xl md:text-4xl mb-1 text-white ${barlowExtraBold.className}`}
+                  >
+                    {displayValue}
+                    {stat.suffix}
                   </div>
-                  <div className={`text-base md:text-lg text-white/80 ${barlowSemiBold.className}`}>
+                  <div
+                    className={`text-sm md:text-base text-white/80 ${barlowSemiBold.className}`}
+                  >
                     {stat.label}
                   </div>
                 </div>
@@ -193,34 +193,43 @@ const ParallaxSection = ({ videoSrc = "/video.mp4" }) => {
             })}
           </div>
 
-          {/* Feature Cards */}
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-8"
-            style={{
-              opacity: Math.max(0, Math.min(1, (scrollProgress - 0.4) / 0.3)),
-              transform: `translateY(${Math.max(0, (1 - (scrollProgress - 0.4) / 0.3)) * 30}px)`,
-            }}
-          >
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/30 hover:bg-white/15 transition-all duration-300">
-              <h3 className={`text-3xl mb-4 text-white ${barlowBold.className}`}>Industry Connections</h3>
-              <p className={`text-white/90 text-lg leading-relaxed ${barlowRegular.className}`}>
-                Build your network with access to top industry leaders, Fortune 500 companies,
-                and successful alumni who are making an impact globally.
+          {/* Vision & Mission Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto mt-4">
+            {/* Vision */}
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/15 transition-all duration-300">
+              <h3 className={`text-2xl mb-3 text-white ${barlowBold.className}`}>
+                Vision
+              </h3>
+              <p
+                className={`text-white/90 text-base leading-relaxed ${barlowRegular.className}`}
+              >
+                To be a leader in management and technology education —
+                nurturing innovation, leadership, and entrepreneurial excellence
+                to create professionals who shape the future with purpose and
+                integrity.
               </p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/30 hover:bg-white/15 transition-all duration-300">
-              <h3 className={`text-3xl mb-4 text-white ${barlowBold.className}`}>Global Perspective</h3>
-              <p className={`text-white/90 text-lg leading-relaxed ${barlowRegular.className}`}>
-                Experience international exposure through global immersion programs, international
-                faculty, and partnerships with leading business schools worldwide.
+            {/* Mission */}
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/30 hover:bg-white/15 transition-all duration-300">
+              <h3 className={`text-2xl mb-3 text-white ${barlowBold.className}`}>
+                Mission
+              </h3>
+              <p
+                className={`text-white/90 text-base leading-relaxed ${barlowRegular.className}`}
+              >
+                Our mission is to empower individuals to become capable leaders
+                and entrepreneurs by delivering innovative learning experiences,
+                fostering research-driven knowledge, and engaging with industry
+                and society through impactful partnerships and sustainable
+                practices.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Bottom Gradient Fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900 to-transparent" style={{ zIndex: 3 }} />
+        {/* Bottom Gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-slate-900/90 to-transparent z-[3]" />
       </div>
     </section>
   );

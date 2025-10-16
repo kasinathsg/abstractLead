@@ -1,191 +1,114 @@
-import { useEffect, useRef, useState } from "react";
-import { Home, Clock, Lightbulb } from "lucide-react";
+import { useEffect } from "react";
+import { Home, BookOpen, Users, UserCheck, Clock, MapPin, Briefcase, TrendingUp, CreditCard } from "lucide-react";
 import { Barlow_Semi_Condensed } from "next/font/google";
-import LaptopMockup from "./Laptop";
 
-const barlowExtraBold = Barlow_Semi_Condensed({ subsets: ["latin"], weight: "800" });
-const barlowBold = Barlow_Semi_Condensed({ subsets: ["latin"], weight: "700" });
-const barlowRegular = Barlow_Semi_Condensed({ subsets: ["latin"], weight: "400" });
+const barlowSemi = Barlow_Semi_Condensed({
+  subsets: ["latin"],
+  weight: "800",
+});
 
-const OPEN_DELAY_MS = 400; // laptop opening delay
+const barlowSemismall = Barlow_Semi_Condensed({
+  subsets: ["latin"],
+  weight: "600",
+});
 
-const WhatWeOfferSection = () => {
-  const sectionRef = useRef(null);
-  const [isMockupOpened, setIsMockupOpened] = useState(false);
+const barlowSmall = Barlow_Semi_Condensed({
+  subsets: ["latin"],
+  weight: "400",
+});
 
-  // controls reveal state for each card
-  const [visibleCards, setVisibleCards] = useState([false, false, false]);
-  const timersRef = useRef([]);
-
-  // detect reduced motion preference
-  const prefersReducedMotion = typeof window !== "undefined"
-    ? window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    : false;
-
-  useEffect(() => {
-    if (!sectionRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Open laptop after delay
-            const timer = window.setTimeout(() => setIsMockupOpened(true), OPEN_DELAY_MS);
-            timersRef.current.push(timer);
-          } else {
-            // Section is scrolled past or above viewport, close laptop and reset cards
-            setIsMockupOpened(false);
-            setVisibleCards([false, false, false]);
-            // clear any pending timers (safety)
-            timersRef.current.forEach((t) => clearTimeout(t));
-            timersRef.current = [];
-          }
-        });
-      },
-      { threshold: 0.5 } // trigger when 50% visible
-    );
-
-    observer.observe(sectionRef.current);
-
-    return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
-      timersRef.current.forEach((t) => clearTimeout(t));
-      timersRef.current = [];
-    };
-  }, []);
-
-  // When mockup opens, start revealing cards one-by-one
-  useEffect(() => {
-    // clear previous timers
-    timersRef.current.forEach((t) => clearTimeout(t));
-    timersRef.current = [];
-
-    if (isMockupOpened) {
-      if (prefersReducedMotion) {
-        // If reduced motion requested, show all at once
-        setVisibleCards([true, true, true]);
-        return;
-      }
-
-      const STAGGER_MS = 260; // time between card starts
-      const START_DELAY_MS = 320; // slight delay before first card begins (keeps in sync with laptop)
-      const newVisible = [false, false, false];
-
-      // schedule reveal for each card
-      for (let i = 0; i < newVisible.length; i++) {
-        const t = window.setTimeout(() => {
-          // reveal the card
-          setVisibleCards((prev) => {
-            const copy = [...prev];
-            copy[i] = true;
-            return copy;
-          });
-        }, START_DELAY_MS + i * STAGGER_MS);
-        timersRef.current.push(t);
-      }
-    } else {
-      // close -> hide cards
-      setVisibleCards([false, false, false]);
-    }
-
-    return () => {
-      timersRef.current.forEach((t) => clearTimeout(t));
-      timersRef.current = [];
-    };
-  }, [isMockupOpened, prefersReducedMotion]);
-
-const features = [
+const accreditationData = [
   {
-    icon: Home,
-    title: "Fully Residential",
-    description:
-      "Immerse yourself in a vibrant campus environment designed to foster collaboration.",
-    color: "bg-blue-500/20",
-    iconColor: "text-blue-400",
+    logo: "https://res.cloudinary.com/diuq0mz3b/image/upload/v1760557843/University_of_calicut_logo_jzafuj.png",
+    type: "Affiliated to",
   },
   {
-    icon: Clock,
-    title: "Flexible Timing",
-    description:
-      "Balance academic rigor with personal and professional commitments.",
-    color: "bg-purple-500/20",
-    iconColor: "text-purple-400",
+    logo: "https://res.cloudinary.com/diuq0mz3b/image/upload/v1760557958/AICTE-Logo-Vector_wjscno.jpg",
+    type: "Approved by",
   },
   {
-    icon: Lightbulb,
-    title: "Life Skill Training",
-    description:
-      "Gain essential life skills through experiential learning that bridges knowledge and wisdom. ",
-    color: "bg-amber-500/20",
-    iconColor: "text-amber-400",
+    logo: "https://res.cloudinary.com/diuq0mz3b/image/upload/v1760557842/National_Board_of_Accreditation.svg_jeyofe.png",
+    type: "Accredited by",
+  },
+  {
+    logo: "https://res.cloudinary.com/diuq0mz3b/image/upload/v1760557843/Amdisa_Membership_Logo_uoqvec.jpg",
+    type: "Member of AMDISA",
+  },
+  {
+    logo: "https://res.cloudinary.com/diuq0mz3b/image/upload/v1760557842/ACBSP_logo_mdqoe9.png",
+    type: "Member of ACBSP",
+  },
+  {
+    logo: "https://res.cloudinary.com/diuq0mz3b/image/upload/v1760559441/Certificates-2023_tcgyhy.jpg",
+    type: "A+++ Grade",
   },
 ];
 
+const features = [
+  { title: "Programme Benefits", text: "Fully Residential programmes allow flexibility, mentoring, and practical business exposure.", icon: Home },
+  { title: "Life Skill Training", text: "Experiential training bridges knowledge and wisdom, preparing students for real life.", icon: BookOpen },
+  { title: "Industry Interaction", text: "Periodic industry interactions provide exposure to real work environments.", icon: Users },
+  { title: "Mentoring", text: "Personalized mentoring helps students excel in their unique talents and skills.", icon: UserCheck },
+  { title: "Flexible Timing", text: "Programme schedule optimized for learning efficiency with intense training and breaks.", icon: Clock },
+  { title: "Deschooling", text: "Outdoor training builds responsibility, team skills, and practical experience.", icon: MapPin },
+  { title: "Entrepreneurship Focus", text: "Specialized training and hands-on projects instill entrepreneurial skills.", icon: Briefcase },
+  { title: "Practical Business Exposure", text: "Real business environments reinforce classroom learning and provide live experience.", icon: TrendingUp },
+  { title: "Earn While You Learn", text: "Students earn through practical activities like events, marketing, and trading.", icon: CreditCard },
+];
+
+const WhatWeOfferSection = () => {
+
   return (
-    <section
-      ref={sectionRef}
-      className="relative  min-h-screen bg-slate-900 py-20 lg:py-32 overflow-hidden"
-    >
-      <div className="max-w-7xl scale-[0.88] mx-auto px-6 md:px-8">
-        <div  className="text-center  mb-10">
-          <h2 className={`text-5xl md:text-6xl lg:text-7xl text-white mb-6 ${barlowExtraBold.className}`}>
-            What We Offer
-          </h2>
-          <p className={`text-2xl text-white/70 max-w-3xl mx-auto ${barlowRegular.className}`}>
-            Transforming potential into excellence through innovative programs
-          </p>
+    <section className="relative min-h-screen bg-white py-16 overflow-hidden">
+      <div className="w-full bg-white px-8 md:px-32 font-sans">
+        {/* Section Title */}
+        <h2 className={`${barlowSemi.className} text-5xl md:text-5xl mb-12 text-center text-[#085eaa]`}>
+          What We Offer
+        </h2>
+
+        {/* 3x3 Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {features.map((feature, idx) => (
+            <div key={idx} className="flex items-start gap-4">
+              <feature.icon className="w-5 h-5 text-[#085eaa] mt-1 flex-shrink-0" />
+              <div>
+                <h3 className={`${barlowSemismall.className} text-lg mb-1 text-[#085eaa]`}>{feature.title}</h3>
+                <p className={`${barlowSmall.className} text-gray-700 text-xs`}>{feature.text}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-25 items-center">
-          {/* Laptop */}
-          <div className="flex justify-center animate-scale-in" style={{ animationDelay: "300ms" }}>
-            <LaptopMockup
-              videoSrc="/trans.mp4"
-              delay={0} // we control opening via parent state
-              isOpened={isMockupOpened} // pass down
-            />
-          </div>
+        {/* Accreditations Title */}
+        <h3 className={`${barlowSemi.className} text-2xl mt-12 mb-6 text-center text-[#085eaa]`}>
+          Accreditations
+        </h3>
 
-          {/* Features */}
-          <div  className="space-y-8 scale-[0.8]">
-            {features.map((feature, idx) => {
-              const Icon = feature.icon;
-              const isVisible = visibleCards[idx];
-
-              // Base transition styles: transform + opacity; hardware-accelerated via translate3d
-              const baseStyle = {
-                transform: isVisible ? "translate3d(0,0,0)" : "translate3d(90px,0,0)",
-                opacity: isVisible ? 1 : 0,
-                transition: "transform 520ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease",
-                willChange: "transform, opacity",
-              };
-
-              return (
-                <div
-                  key={idx}
-                  style={baseStyle}
-                  aria-hidden={!isVisible}
-                  className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:bg-white/10"
-                >
-                  <div className="flex  items-start gap-6">
-                    <div
-                      className={`flex-shrink-0 w-20 h-20 rounded-2xl ${feature.color} flex items-center justify-center`}
-                    >
-                      <Icon size={40} className={feature.iconColor} strokeWidth={2} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className={`text-3xl text-white mb-3 ${barlowBold.className}`}>{feature.title}</h3>
-                      <p className={`text-lg text-white/80 leading-relaxed ${barlowRegular.className}`}>
-                        {feature.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+        {/* Infinite Scroll Container */}
+        <div className="overflow-hidden relative">
+          <div className="flex animate-scroll whitespace-nowrap">
+            {[...accreditationData, ...accreditationData].map((item, idx) => (
+              <div key={idx} className="flex flex-col items-center min-w-max mx-6">
+                <img src={item.logo} alt={`Accreditation ${idx}`} className="h-20 object-contain mb-1" />
+                <p className={`${barlowSmall.className} text-xs text-black text-center`}>{item.type}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* CSS animation */}
+      <style jsx>{`
+        @keyframes scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-scroll {
+          display: flex;
+          gap: 2rem;
+          animation: scroll 20s linear infinite;
+        }
+      `}</style>
     </section>
   );
 };
