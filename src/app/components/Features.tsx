@@ -13,12 +13,7 @@ const AnimatedTestimonials = dynamic(
 const barlowExtraBold = Barlow_Semi_Condensed({
   subsets: ["latin"],
   weight: "800",
-});
-
-const barlowRegular = Barlow_Semi_Condensed({
-  subsets: ["latin"],
-  weight: "400",
-});
+})
 
 const testimonials = [
   {

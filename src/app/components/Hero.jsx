@@ -193,7 +193,7 @@ export default function ModernMBAHero({ logoSrc }) {
   {/* Right: Download Prospectus */}
   <div className="hidden md:flex">
     <a
-      href="/prospectus.pdf"
+  
       className={`px-6 py-3 rounded-md bg-slate-900 text-white text-sm font-medium shadow-md hover:-translate-y-0.5 transition-transform ${barlowSmall.className}`}
     >
       Download Prospectus

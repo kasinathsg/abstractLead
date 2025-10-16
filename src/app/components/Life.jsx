@@ -2,6 +2,15 @@
 
 import { Barlow_Semi_Condensed } from "next/font/google";
 import React from "react";
+import Image from "next/image";
+import {
+  Sparkles,
+  Home,
+  Waves,
+  TreePine,
+  Dumbbell,
+} from "lucide-react";
+
 
 const barlowExtraBold = Barlow_Semi_Condensed({
   subsets: ["latin"],
@@ -12,6 +21,14 @@ const barlowRegular = Barlow_Semi_Condensed({
   subsets: ["latin"],
   weight: "400",
 });
+
+const iconMap = {
+  Sparkles: Sparkles,
+  Home: Home,
+  Waves: Waves,
+  TreePine: TreePine,
+  Dumbbell: Dumbbell,
+};
 
 export default function LifeAtLeadSection() {
   const [isVisible, setIsVisible] = React.useState(false);
@@ -83,7 +100,7 @@ export default function LifeAtLeadSection() {
         {/* Left Section - Features */}
         <div className="space-y-8 pr-4 md:pr-8">
           {features.map((feature, index) => {
-            const Icon = require("lucide-react")[feature.icon];
+       const Icon = iconMap[feature.icon];
             return (
               <div
                 key={index}
@@ -124,11 +141,17 @@ export default function LifeAtLeadSection() {
             maxWidth: "130%",
           }}
         >
-          <img
-            src="https://res.cloudinary.com/diuq0mz3b/image/upload/v1760566463/Frame_1_1_wgyrce.png"
-            alt="Life at LEAD"
-            className="w-full h-auto object-cover rounded-2xl"
-          />
+
+            
+     <div className="relative w-full h-[500px] md:h-[600px] lg:h-[500px]">
+  <Image
+    src="https://res.cloudinary.com/diuq0mz3b/image/upload/v1760566463/Frame_1_1_wgyrce.png"
+    alt="Life at LEAD"
+    fill
+    className="object-cover rounded-2xl"
+  />
+</div>
+
         </div>
       </div>
     </section>
